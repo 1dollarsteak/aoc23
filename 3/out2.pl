@@ -25,7 +25,8 @@ sub print_number { # row, col
   my $constructed_number = "";
 
   if ($line_chars[$l_col] =~ /\d/) {
-    while (($l_col != -1)) {
+    while (($l_col != 0)) {
+      #print "in pn row/col: $l_row/$l_col\n";
       if ($line_chars[$l_col] =~ /[^\d]/) {
         $l_col++;
         last;
@@ -38,7 +39,14 @@ sub print_number { # row, col
     exit -1;
   }
 
-  while ($line_chars[$l_col] =~ /\d/) {
+  #print "in pn final row/col: $l_row/$l_col\n";
+  if ($l_col == 0) {
+    if ($line_chars[$l_col] =~ /[^\d]/) {
+      $l_col++;
+    }
+  }
+
+  while (($l_col <= $#line_chars) && ($line_chars[$l_col] =~ /\d/)) {
     $constructed_number .= $line_chars[$l_col];
     $l_col++;
   }
@@ -123,7 +131,7 @@ for my $gear_coords (@all_gears) {
   my $size = keys(%gear_sum);
   if ($size == 2) {
     my @i = values(%gear_sum);
-    #print "$i[0] * $i[1]\n";
+    print "$i[0] * $i[1]\n";
     $sum += $i[0] * $i[1];
   }
   %gear_sum = ();
