@@ -11,7 +11,7 @@ my $current_number;
 
 while (<>) {
   $winning_number = $1 if $_ =~ /Card\s*\d+:\s((\s*[\d]{,2}\s*){10})/;
-  $current_number = $1 if $_ =~ /Card\s*\d+:\s.*\s\| (([\d]{,2}\s*){25})/;
+  $current_number = $1 if $_ =~ /Card\s*\d+:\s.*\s\| (([\d]{,2}\s*)*)/;
   
   my @tmp_w = ();
   my @tmp_c = ();
@@ -28,6 +28,8 @@ while (<>) {
   }
   push(@current_numbers, \@tmp_c);
 }
+print scalar @current_numbers . "\n";
+print scalar @winning_numbers . "\n";
 
 my $sum = 0;
 my $score = 0;
@@ -36,6 +38,14 @@ for my $w_cards (@winning_numbers) {
   for my $winning_number (@$w_cards) {
     for my $current_number (@{$current_numbers[$card_index]}) {
       if ($winning_number == $current_number) {
+        print "on $card_index, with " . @$w_cards . " and " . @{$current_numbers[$card_index]} . "\n";
+        if (@{$current_numbers[$card_index]} == 24) {
+          print "###\n";
+          for my $tmp (@{$current_numbers[$card_index]}) {
+            print "$tmp-";
+          }
+          print "###\n";
+        }
         print "winning: $current_number\n";
         $score++;
       }
