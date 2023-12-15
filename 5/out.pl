@@ -57,6 +57,23 @@ sub translate_items {
   print "\n";
 }
 
+# test_in_ranges \@range_condensed, seed : (dest, src, range)
+sub test_in_ranges {
+  my @range_condensed = @{$_[0]};
+  my $to_translate = $_[1];
+
+  for my $range_line (@range_condensed) {
+    my @range_line = split(/\s/, $$range_line);
+    # $range_line[0] = dest
+    # $range_line[1] = src
+    # $range_line[2] = range
+    if (($to_translate > $range_line[1]) and ($to_translate < ($range_line[1] + $range_line[2]))) {
+      return ($range_line[0], $range_line[1], $range_line[2]);
+    }
+  }
+  return 0;
+}
+
 while (<>) {
   if ($_ =~ /seeds:/) {
     @seeds = split(/\s/, ($_ =~ s/^seeds: //r));
@@ -69,12 +86,20 @@ while (<>) {
       push(@range_condensed, \$line);
     }
     elsif ($_ =~ /^.$/s) {
-      %seed_to_soil = fill_hash(\@range_condensed);
+      for my $seed (@seeds) {
+        my @res = test_in_ranges(\@range_condensed, $seed);
+        if ($res[0]) {
+          print("$seed in range $res[0], $res[1], $res[2].\n");
+        } else {
+          print ("$seed in no range\n");
+        }
+      }
+      #%seed_to_soil = fill_hash(\@range_condensed);
       @range_condensed = ();
       $mode = 0;
-      print Dumper(\%seed_to_soil);
-      print Dumper(\@seeds);
-      translate_items(\%seed_to_soil, \@seeds);
+      #print Dumper(\%seed_to_soil);
+      #print Dumper(\@seeds);
+      #translate_items(\%seed_to_soil, \@seeds);
       exit 0;
     }
   }
